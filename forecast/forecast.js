@@ -17,6 +17,4 @@ var getForecast = (lat, lng, callback) => {
   });
 };
 
-module.exports = {
-  getForecast
-}
+module.exports.getForecast = getForecast;
