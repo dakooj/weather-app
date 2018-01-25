@@ -1,8 +1,29 @@
-const request = require('request');
+const yargs = require('yargs');
 
-request({
-  url: 'https://maps.googleapis.com/maps/api/geocode/json?address=4550%20Pearson%20St%20Long%20Island%20City',
-  json: true
-}, (error, response, body) => {
-  console.log(JSON.stringify(response, undefined, 2));
+const geocode = require('./geocode/geocode');
+const forecast = require('./forecast/forecast');
+
+const argv = yargs
+  .options({
+    a: {
+      demand: true,
+      alias: 'address',
+      describe: 'Address to fetch weather for',
+      string: true
+    }
+  })
+  .help()
+  .alias('help', 'h')
+  .argv;
+
+geocode.geocodeAddress(argv.address, (errorMessage, results) => {
+  if (errorMessage) {
+    console.log(errorMessage);
+  } else {
+    console.log(results.address);
+    forecast.getForecast(results.latitude, results.longitude, (errorMessage, weatherResults) => {
+      console.log(`Temperature: ${weatherResults.temperature}`);
+      console.log(`Real Feel: ${weatherResults.apparentTemperature}`);
+    });
+  }
 });
